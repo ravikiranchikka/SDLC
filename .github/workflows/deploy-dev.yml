@@ -1,0 +1,49 @@
+name: Deploy DEV
+
+# Simulated deployment for the delivery pilot. It performs no infrastructure
+# work; it verifies that the artefact it would ship is actually present and
+# records the story it was run for, so the gate has real evidence rather than
+# an unconditional green tick.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: false
+        default: 'dev'
+      story_key:
+        description: Jira key of the story being deployed
+        required: false
+        default: ''
+      correlation_id:
+        description: Correlation id of the delivery run
+        required: false
+        default: ''
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Record the deployment request
+        run: |
+          echo "environment=${{ inputs.environment }}"
+          echo "story=${{ inputs.story_key }}"
+          echo "correlation=${{ inputs.correlation_id }}"
+
+      - name: Verify there is something to deploy
+        run: |
+          if [ ! -d src ]; then
+            echo "::error title=Nothing to deploy::No src directory exists on this branch."
+            exit 1
+          fi
+          echo "files to ship:"
+          find src -type f | sort
+
+      - name: Smoke check
+        run: |
+          python -c "import pathlib, sys; \
+          files = list(pathlib.Path('src').rglob('*')); \
+          sys.exit(0 if files else 1)"
+          echo "DEV smoke check passed"
