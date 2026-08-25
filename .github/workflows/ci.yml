@@ -1,0 +1,54 @@
+name: CI
+
+# The agents start this with workflow_dispatch; without that trigger the
+# dispatch API answers 404. Every input the Testing Agent sends must be
+# declared here, or GitHub rejects the call as an unexpected input.
+on:
+  workflow_dispatch:
+    inputs:
+      story_key:
+        description: Jira key of the story under test
+        required: false
+        default: ''
+      correlation_id:
+        description: Correlation id of the delivery run
+        required: false
+        default: ''
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Record what this run is for
+        run: |
+          echo "story=${{ inputs.story_key }}"
+          echo "correlation=${{ inputs.correlation_id }}"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: Byte-compile every Python file
+        # A real check: this fails on a syntax error anywhere in src.
+        run: |
+          if [ -d src ]; then python -m compileall -q src; else echo "no src directory yet"; fi
+
+      - name: Run tests
+        run: |
+          found=$(find . -path ./.git -prune -o \( -name 'test_*.py' -o -name '*_test.py' \) -print | head -1)
+          if [ -n "$found" ]; then
+            pytest -q
+          else
+            echo "::warning title=No tests::This repository has no test files, so this run proves only that the code compiles."
+          fi
