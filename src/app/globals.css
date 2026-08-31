@@ -1,0 +1,86 @@
+/*
+ * SCRUM-31 - Global stylesheet.
+ *
+ * Tailwind v4, CSS-first configuration. Brand tokens live in the `@theme`
+ * block below rather than in a root `tailwind.config.js`, which keeps the
+ * design system inside the writable `src/` tree. If the repository is pinned
+ * to Tailwind v3, port this `@theme` block to `tailwind.config.js` as
+ * described in docs/scrum-31-implementation-notes.md.
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette - the only source of colour in the application. */
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9ebff;
+  --color-brand-500: #2a7fd4;
+  --color-brand-600: #1f66b0;
+  --color-brand-700: #17518d;
+
+  /* Neutral ink and surfaces. */
+  --color-ink-900: #10202e;
+  --color-ink-600: #4a5b६8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f8fb;
+  --color-hairline: #dbe4ec;
+
+  /* Typography - `--font-sans` is bound to next/font Inter in layout.tsx. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    /* Anchor navigation lands below the sticky header. */
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    /*
+     * AC-2: nothing may cause a horizontal scrollbar at a 360px viewport.
+     * `min-width: 0` on the body plus `overflow-x: hidden` is the safety net;
+     * layout components still avoid fixed pixel widths.
+     */
+    min-width: 0;
+    overflow-x: hidden;
+    background-color: var(--color-surface);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Media never overflows its container on narrow viewports. */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Consistent, visible keyboard focus on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  /* Respect reduced-motion preferences. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
