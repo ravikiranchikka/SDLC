@@ -1,206 +1,206 @@
+import { buildWhatsAppUrl } from '@/lib/site-config';
+import type { HomeContent } from '@/types/content';
+
 /**
- * SCRUM-31 - Home page content.
+ * Home page content payload.
  *
- * Data module only: plain objects typed by `src/types/content`, assembled with
- * the pure helpers in `src/lib/content`. No React, no JSX, no next/* imports,
- * so this module is safe to import from server components, client components
- * and Node-based unit tests alike.
+ * Every section carries the `slotId` of its entry in `src/lib/content-status.ts`
+ * (and therefore docs/content-tracker.md). All copy below is DOCUMENTED
+ * PLACEHOLDER CONTENT: it renders normally so the build never fails while the
+ * approved client copy is outstanding (AC-5), and each section is visibly
+ * flagged by `PlaceholderBadge` until its slot status becomes `approved`.
  *
- * Every section is wrapped in a `ContentSlot`. Sections whose copy or media is
- * still awaiting client sign-off use `placeholder(...)`, which keeps the build
- * green while flagging the gap in the DOM (`data-content-status`) and in
- * docs/content-tracker.md (AC-5).
- */
-
-import { approved, placeholder } from '../lib/content';
-import type {
-  CtaBandContent,
-  HeroContent,
-  HomeContent,
-  ServiceTeaser,
-  Testimonial,
-  ValueProp,
-} from '../types/content';
-import { consultationCta, siteMeta, whatsappCta } from './site';
-
-/**
- * Owners of the outstanding content. Kept as constants so the tracker doc and
- * the unit tests can compare against a single spelling.
- */
-export const contentOwners = {
-  client: 'Clinic marketing lead (client)',
-  copywriter: 'Agency copywriter',
-  photographer: 'Agency photographer',
-} as const;
-
-/**
- * Directory for stand-in artwork. These are lightweight local SVGs so a
- * missing file degrades to alt text instead of breaking the build; the exact
- * filenames a maintainer must add under `public/` are listed in
- * docs/performance-and-assets.md.
- */
-const PLACEHOLDER_IMAGE_DIR = '/images/placeholders';
-
-const heroContent: HeroContent = {
-  eyebrow: siteMeta.tagline,
-  heading: 'Consult an experienced doctor without leaving home',
-  subheading:
-    'Book a secure online consultation, or message the clinic on WhatsApp and the front desk will help you find the right appointment.',
-  image: {
-    src: `${PLACEHOLDER_IMAGE_DIR}/hero.svg`,
-    alt: 'Placeholder illustration of a doctor speaking with a patient during an online consultation',
-    width: 1200,
-    height: 900,
-  },
-  primaryCta: consultationCta,
-  secondaryCta: whatsappCta,
-};
-
-const serviceTeasers: readonly ServiceTeaser[] = [
-  {
-    id: 'home.services.online-consultation',
-    title: 'Online consultation',
-    summary:
-      'Placeholder: a scheduled video or phone consultation with a clinic doctor, including a written summary afterwards.',
-    href: '/online-consultation',
-    image: {
-      src: `${PLACEHOLDER_IMAGE_DIR}/service-online-consultation.svg`,
-      alt: 'Placeholder illustration representing an online consultation',
-      width: 640,
-      height: 480,
-    },
-  },
-  {
-    id: 'home.services.in-clinic-care',
-    title: 'In-clinic care',
-    summary:
-      'Placeholder: examination, diagnosis and treatment at the clinic, with appointments confirmed before you travel.',
-    href: '/services',
-    image: {
-      src: `${PLACEHOLDER_IMAGE_DIR}/service-in-clinic-care.svg`,
-      alt: 'Placeholder illustration representing in-clinic care',
-      width: 640,
-      height: 480,
-    },
-  },
-  {
-    id: 'home.services.follow-up-support',
-    title: 'Follow-up support',
-    summary:
-      'Placeholder: review appointments and ongoing guidance so a treatment plan is followed through, not just started.',
-    href: '/services',
-    image: {
-      src: `${PLACEHOLDER_IMAGE_DIR}/service-follow-up-support.svg`,
-      alt: 'Placeholder illustration representing follow-up support',
-      width: 640,
-      height: 480,
-    },
-  },
-];
-
-const valueProps: readonly ValueProp[] = [
-  {
-    id: 'home.why.same-day',
-    title: 'Same-day appointments',
-    body: 'Placeholder: appointment availability and typical waiting times are to be confirmed by the clinic.',
-    icon: 'clock',
-  },
-  {
-    id: 'home.why.qualified-doctors',
-    title: 'Qualified, registered doctors',
-    body: 'Placeholder: doctor names, registration numbers and specialisations are pending client sign-off.',
-    icon: 'shield',
-  },
-  {
-    id: 'home.why.consult-anywhere',
-    title: 'Consult from anywhere',
-    body: 'Placeholder: online consultations for patients who cannot travel to the clinic, including from overseas.',
-    icon: 'globe',
-  },
-  {
-    id: 'home.why.patient-first',
-    title: 'Patient-first care',
-    body: 'Placeholder: the clinic care philosophy statement is being drafted with the client.',
-    icon: 'heart',
-  },
-];
-
-const testimonials: readonly Testimonial[] = [
-  {
-    id: 'home.testimonials.one',
-    quote:
-      'Placeholder testimonial: patient stories are held back until written consent has been received and reviewed.',
-    author: 'Patient name pending',
-    context: 'Consent pending',
-  },
-  {
-    id: 'home.testimonials.two',
-    quote:
-      'Placeholder testimonial: the second approved quote will replace this stand-in without any layout change.',
-    author: 'Patient name pending',
-    context: 'Consent pending',
-  },
-];
-
-const ctaBandContent: CtaBandContent = {
-  heading: 'Ready to speak to a doctor?',
-  body: 'Book an online consultation at a time that suits you, or start a WhatsApp conversation with the clinic front desk.',
-  primaryCta: consultationCta,
-  secondaryCta: whatsappCta,
-};
-
-/**
- * The five Home page sections.
+ * Image `src` values point at files that must exist under `public/images/`.
+ * `public/` is outside this story's allowed paths, so the exact required
+ * filenames and dimensions are listed in docs/frontend-foundation.md for the
+ * maintainer who owns that directory. Widths and heights are always explicit so
+ * next/image can reserve space and avoid cumulative layout shift (AC-4).
  *
- * Slot ids are stable and must match the rows in docs/content-tracker.md.
+ * This module is read by exactly one consumer: `src/app/page.tsx`.
  */
 export const homeContent: HomeContent = {
-  hero: approved('home.hero', contentOwners.copywriter, heroContent),
-  services: placeholder(
-    'home.services',
-    contentOwners.client,
-    serviceTeasers,
-    'Awaiting the confirmed service list, descriptions and photography from the clinic.',
-  ),
-  whyChooseUs: placeholder(
-    'home.whyChooseUs',
-    contentOwners.client,
-    valueProps,
-    'Awaiting confirmed differentiators, doctor credentials and appointment availability.',
-  ),
-  testimonials: placeholder(
-    'home.testimonials',
-    contentOwners.client,
-    testimonials,
-    'Awaiting patient testimonials with signed publication consent.',
-  ),
-  ctaBand: approved('home.ctaBand', contentOwners.copywriter, ctaBandContent),
-};
+  hero: {
+    slotId: 'home.hero',
+    eyebrow: 'Online and in-clinic care',
+    heading: 'Expert consultations, without the waiting room',
+    subheading:
+      'Speak to an experienced doctor from wherever you are. Book a scheduled online consultation or send us a message on WhatsApp and our care team will guide you to the right next step.',
+    image: {
+      src: '/images/hero-clinic.jpg',
+      alt: 'A doctor speaking with a patient in a bright, modern consultation room',
+      width: 1280,
+      height: 960,
+    },
+    primaryCta: {
+      label: 'Book Online Consultation',
+      href: '/online-consultation',
+      variant: 'primary',
+      external: false,
+      testId: 'hero-cta-primary',
+    },
+    secondaryCta: {
+      label: 'Chat on WhatsApp',
+      href: buildWhatsAppUrl(),
+      variant: 'secondary',
+      external: true,
+      testId: 'hero-cta-whatsapp',
+    },
+    trustPoints: [
+      'Same-week appointment slots',
+      'Qualified, registered practitioners',
+      'Private and confidential by design',
+    ],
+  },
 
-/** Heading copy for the non-hero Home sections, kept out of the components. */
-export const homeSectionHeadings = {
   services: {
-    eyebrow: 'What we do',
-    heading: 'Care that fits around your day',
-    subheading:
-      'Placeholder: a short introduction to the clinic service range, pending client copy.',
+    slotId: 'home.services',
+    heading: 'How we can help',
+    intro:
+      'A short overview of the care programmes we offer. Each service is delivered by a named clinician and can begin with an online consultation.',
+    items: [
+      {
+        id: 'general-consultation',
+        title: 'General consultation',
+        summary:
+          'A structured review of your symptoms and history, with a clear plan and written summary after the call.',
+        href: '/services',
+      },
+      {
+        id: 'follow-up-care',
+        title: 'Follow-up care',
+        summary:
+          'Ongoing reviews for patients already under our care, including prescription and dosage adjustments.',
+        href: '/services',
+      },
+      {
+        id: 'lifestyle-nutrition',
+        title: 'Lifestyle and nutrition',
+        summary:
+          'Practical, sustainable guidance on diet, sleep and activity, tailored to your day-to-day routine.',
+        href: '/services',
+      },
+      {
+        id: 'chronic-condition-support',
+        title: 'Chronic condition support',
+        summary:
+          'Long-term monitoring and coaching for conditions that need regular clinical oversight.',
+        href: '/services',
+      },
+      {
+        id: 'second-opinion',
+        title: 'Second opinion',
+        summary:
+          'An independent review of an existing diagnosis or treatment plan, with your reports read in advance.',
+        href: '/services',
+      },
+      {
+        id: 'family-health-checks',
+        title: 'Family health checks',
+        summary:
+          'Preventive reviews for the whole family, scheduled together to save you repeat visits.',
+        href: '/services',
+      },
+    ],
+    cta: {
+      label: 'View all services',
+      href: '/services',
+      variant: 'ghost',
+      external: false,
+      testId: 'services-teaser-cta',
+    },
   },
+
   whyChooseUs: {
-    eyebrow: 'Why patients choose us',
-    heading: 'Straightforward care, clearly explained',
-    subheading:
-      'Placeholder: the clinic value proposition summary, pending client copy.',
+    slotId: 'home.why-choose-us',
+    heading: 'Why patients choose us',
+    intro:
+      'We keep the process simple: an easy way to reach us, unhurried consultations, and a plan you can actually follow.',
+    points: [
+      {
+        id: 'reach-us-in-one-tap',
+        title: 'Reach us in one tap',
+        description:
+          'Book online or start a WhatsApp conversation from any page. No forms to hunt for and no phone queues.',
+      },
+      {
+        id: 'unhurried-consultations',
+        title: 'Unhurried consultations',
+        description:
+          'Appointments are scheduled with enough time to talk through your history, concerns and options.',
+      },
+      {
+        id: 'clear-written-plans',
+        title: 'Clear written plans',
+        description:
+          'After every consultation you receive a written summary covering advice, prescriptions and next steps.',
+      },
+      {
+        id: 'continuity-of-care',
+        title: 'Continuity of care',
+        description:
+          'Wherever possible you see the same clinician, so you never have to repeat your story from scratch.',
+      },
+    ],
+    image: {
+      src: '/images/why-choose-us.jpg',
+      alt: 'Clinic care team reviewing a patient plan together at a reception desk',
+      width: 960,
+      height: 720,
+    },
   },
+
   testimonials: {
-    eyebrow: 'In their words',
+    slotId: 'home.testimonials',
     heading: 'What our patients say',
-    subheading:
-      'Placeholder: quotes are published only once written patient consent is on file.',
+    testimonials: [
+      {
+        id: 'testimonial-1',
+        quote:
+          'The online consultation was straightforward and I never felt rushed. I had a written plan in my inbox the same evening.',
+        author: 'A. Sharma',
+        treatment: 'Online consultation',
+      },
+      {
+        id: 'testimonial-2',
+        quote:
+          'I sent a WhatsApp message on a Sunday and had an appointment confirmed for Tuesday morning. Genuinely easy.',
+        author: 'R. Menon',
+        treatment: 'Follow-up care',
+      },
+      {
+        id: 'testimonial-3',
+        quote:
+          'The advice on diet and routine was realistic rather than idealistic, which is why I have been able to stick to it.',
+        author: 'S. Iyer',
+        treatment: 'Lifestyle and nutrition',
+      },
+    ],
+    cta: {
+      label: 'Read success stories',
+      href: '/success-stories',
+      variant: 'ghost',
+      external: false,
+      testId: 'testimonial-teaser-cta',
+    },
   },
-} as const;
 
-/** Link from the testimonial teaser through to the full Testimonials page. */
-export const testimonialsIndexHref = '/testimonials';
-
-/** Link from the services teaser through to the full Services page. */
-export const servicesIndexHref = '/services';
+  ctaBand: {
+    slotId: 'home.cta-band',
+    heading: 'Ready to speak to a doctor?',
+    body: 'Choose a consultation slot that suits you, or message our care team on WhatsApp and we will help you find the right appointment.',
+    primaryCta: {
+      label: 'Book Online Consultation',
+      href: '/online-consultation',
+      variant: 'primary',
+      external: false,
+      testId: 'cta-band-primary',
+    },
+    secondaryCta: {
+      label: 'Chat on WhatsApp',
+      href: buildWhatsAppUrl(),
+      variant: 'secondary',
+      external: true,
+      testId: 'cta-band-whatsapp',
+    },
+  },
+};
