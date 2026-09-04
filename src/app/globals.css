@@ -1,60 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
- * SCRUM-31 - Global stylesheet.
+ * Brand design tokens.
  *
- * Tailwind v4, CSS-first configuration. Brand tokens live in the `@theme`
- * block below rather than in a root `tailwind.config.js`, which keeps the
- * design system inside the writable `src/` tree. If the repository is pinned
- * to Tailwind v3, port this `@theme` block to `tailwind.config.js` as
- * described in docs/scrum-31-implementation-notes.md.
+ * The Tailwind config lives at the repository root and is OUT OF SCOPE for this
+ * story, so no custom Tailwind colour names (e.g. `bg-brand-600`) exist.
+ * All brand colours are therefore declared here as CSS custom properties and
+ * consumed either by the component classes below or via Tailwind arbitrary
+ * values, e.g. `bg-[color:var(--brand-600)]` / `text-[color:var(--ink-600)]`.
  */
-
-@import "tailwindcss";
-
-@theme {
-  /* Brand palette - the only source of colour in the application. */
-  --color-brand-50: #eef6ff;
-  --color-brand-100: #d9ebff;
-  --color-brand-500: #2a7fd4;
-  --color-brand-600: #1f66b0;
-  --color-brand-700: #17518d;
-
-  /* Neutral ink and surfaces. */
-  --color-ink-900: #10202e;
-  --color-ink-600: #4a5b६8;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f5f8fb;
-  --color-hairline: #dbe4ec;
-
-  /* Typography - `--font-sans` is bound to next/font Inter in layout.tsx. */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+:root {
+  --brand-50: #f0fdfa;
+  --brand-100: #ccfbf1;
+  --brand-600: #0d7c72;
+  --brand-700: #0a5f58;
+  --ink-900: #10201f;
+  --ink-600: #4a5b5a;
+  --surface: #ffffff;
+  --accent-500: #d97706;
 }
 
 @layer base {
+  /*
+   * Horizontal overflow safety (AC-2): the Home page must not scroll sideways
+   * at a 360px viewport width, regardless of long words or wide media.
+   */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   html {
-    /* Anchor navigation lands below the sticky header. */
-    scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
-    /*
-     * AC-2: nothing may cause a horizontal scrollbar at a 360px viewport.
-     * `min-width: 0` on the body plus `overflow-x: hidden` is the safety net;
-     * layout components still avoid fixed pixel widths.
-     */
-    min-width: 0;
-    overflow-x: hidden;
-    background-color: var(--color-surface);
-    color: var(--color-ink-900);
-    font-family: var(--font-sans);
+    background-color: var(--surface);
+    color: var(--ink-900);
+    font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
     line-height: 1.6;
-    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Media never overflows its container on narrow viewports. */
+  /* Media never forces the layout wider than its container. */
   img,
   svg,
   video {
@@ -62,14 +54,31 @@
     height: auto;
   }
 
-  /* Consistent, visible keyboard focus on every interactive element. */
-  :focus-visible {
-    outline: 2px solid var(--color-brand-600);
-    outline-offset: 2px;
-    border-radius: 0.25rem;
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--ink-900);
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+    overflow-wrap: break-word;
   }
 
-  /* Respect reduced-motion preferences. */
+  p,
+  li {
+    overflow-wrap: break-word;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--brand-600);
+    outline-offset: 2px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -82,5 +91,77 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+@layer components {
+  /* Shared page gutter and max width. Used by <Container />. */
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Consistent vertical rhythm between page sections. */
+  .section {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.14em];
+    color: var(--brand-700);
+  }
+
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-5 py-3 text-center text-base font-semibold no-underline transition-colors;
+  }
+
+  .btn-primary {
+    background-color: var(--brand-600);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--brand-700);
+  }
+
+  .btn-secondary {
+    background-color: var(--brand-50);
+    border: 1px solid var(--brand-600);
+    color: var(--brand-700);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--brand-100);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--brand-700);
+    @apply px-2;
+  }
+
+  .btn-ghost:hover {
+    text-decoration: underline;
+  }
+
+  .card {
+    @apply flex h-full flex-col gap-2 rounded-xl p-5 sm:p-6;
+    background-color: var(--surface);
+    border: 1px solid var(--brand-100);
+  }
+
+  /* Non-intrusive flag rendered for any content slot that is not yet approved. */
+  .placeholder-flag {
+    @apply inline-flex items-center gap-2 rounded-md px-2 py-1 text-xs font-medium;
+    background-color: #fff7ed;
+    border: 1px dashed var(--accent-500);
+    color: #7c4a06;
+  }
+
+  /* Visually hidden until focused - used by the skip link. */
+  .skip-link {
+    @apply absolute left-4 top-4 z-50 -translate-y-24 rounded-lg px-4 py-2 text-sm font-semibold transition-transform focus:translate-y-0;
+    background-color: var(--brand-600);
+    color: #ffffff;
   }
 }
