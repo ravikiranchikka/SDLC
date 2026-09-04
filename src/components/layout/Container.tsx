@@ -1,49 +1,45 @@
-/**
- * SCRUM-31 - Container primitive.
- *
- * The single horizontal-rhythm wrapper used by the header, every page section
- * and the footer. Centralising the max width and gutters here is what keeps a
- * 360px viewport free of horizontal scrolling (AC-2): no layout block is
- * allowed to set its own ad-hoc padding or a fixed pixel width.
- *
- * Presentational only - imports nothing from `src/app`.
- */
-
 import type { ElementType, ReactNode } from 'react';
 
-/** Base classes shared by every container instance. */
-const CONTAINER_CLASSES = 'mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6 lg:px-8';
+/**
+ * Tiny class-name joiner used across the component tree.
+ *
+ * Deliberately dependency-free (no `clsx`/`classnames`): the dependency manifest
+ * is owned outside this story, so nothing here may add packages.
+ *
+ * @param classes Class names; falsy entries are ignored.
+ * @returns The space-separated class string.
+ */
+export function cx(
+  ...classes: ReadonlyArray<string | false | null | undefined>
+): string {
+  return classes.filter((value): value is string => Boolean(value)).join(' ');
+}
 
 export interface ContainerProps {
-  /** Content rendered inside the container. */
-  readonly children: ReactNode;
-  /** Extra utility classes appended after the base container classes. */
-  readonly className?: string;
-  /** Element to render, e.g. `section`, `nav`, `footer`. Defaults to `div`. */
-  readonly as?: ElementType;
-  /** Optional `data-testid` forwarded to the rendered element. */
-  readonly testId?: string;
+  /** Element or component to render as. Defaults to a plain `div`. */
+  as?: ElementType;
+  /** Additional classes merged after `.container-page`. */
+  className?: string;
+  /** Optional test hook forwarded to the rendered element. */
+  'data-testid'?: string;
+  children: ReactNode;
 }
 
 /**
- * Render children inside the shared max-width / gutter wrapper.
- *
- * @example
- * <Container as="section" className="py-12 md:py-20">...</Container>
+ * Shared layout primitive applying the site's max width and responsive gutters
+ * (`.container-page` in globals.css). Keeping the width rules in one place is
+ * part of the horizontal-overflow safety net required by AC-2.
  */
 export function Container({
-  children,
+  as,
   className,
-  as: Component = 'div',
-  testId,
+  children,
+  'data-testid': testId,
 }: ContainerProps) {
-  const classes =
-    typeof className === 'string' && className.length > 0
-      ? `${CONTAINER_CLASSES} ${className}`
-      : CONTAINER_CLASSES;
+  const Component: ElementType = as ?? 'div';
 
   return (
-    <Component className={classes} data-testid={testId}>
+    <Component className={cx('container-page', className)} data-testid={testId}>
       {children}
     </Component>
   );
