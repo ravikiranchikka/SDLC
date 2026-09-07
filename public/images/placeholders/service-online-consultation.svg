@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Placeholder">
+  <rect width="640" height="480" fill="#f5f8fb"/>
+  <rect x="120" y="110" width="400" height="230" rx="20" fill="#d9ebff"/>
+  <circle cx="320" cy="225" r="56" fill="#2a7fd4" opacity="0.4"/>
+  <text x="320" y="420" font-family="system-ui, sans-serif" font-size="30" fill="#17518d" text-anchor="middle">Online consultation</text>
+</svg>

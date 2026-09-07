@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Placeholder">
+  <rect width="640" height="480" fill="#f5f8fb"/>
+  <rect x="150" y="120" width="340" height="220" rx="20" fill="#d9ebff"/>
+  <path d="M210 240 l50 50 l120 -120" fill="none" stroke="#2a7fd4" stroke-opacity="0.6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="320" y="420" font-family="system-ui, sans-serif" font-size="30" fill="#17518d" text-anchor="middle">Follow-up support</text>
+</svg>
